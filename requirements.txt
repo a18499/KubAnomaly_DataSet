@@ -22,4 +22,4 @@ tensorboard==1.15.0
 tensorflow==1.15.0
 termcolor==1.1.0
 threadsafe-tkinter==1.0.1
-Werkzeug==0.14.1
+Werkzeug==0.15.3
