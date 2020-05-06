@@ -1,22 +1,21 @@
+/*
 buildscript {
-    ext.kotlin_version = '1.3.0'
+    ext.kotlin_version = '1.3.72'
     repositories {
         jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.6'
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.12'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
     }
-}
+}*/
 
 plugins {
-    id 'org.jetbrains.kotlin.jvm'
-    id 'maven-publish'
-    id "com.jfrog.artifactory"
-    id "com.google.protobuf" version "0.8.6"
+    id "com.google.protobuf" version "0.8.12"
     id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.0'
 }
 
 group 'KubAnomaly'
@@ -25,14 +24,7 @@ def grpcVersion = '1.7.0'
 
 repositories {
     mavenCentral()
-    maven {
-        url 'http://140.92.13.145:8081/artifactory/libs-release'
-        credentials {
-            username = "admin"
-            password = "lablab"
-        }
-    }
-
+    jcenter()
 }
 
 protobuf {
@@ -123,10 +115,12 @@ dependencies {
 
     //Own Repo
     //compile(group: 'KubAnomaly', name: 'DAVIDCommonLibrary', version: '0.1.9.19')
-    compile(group: 'iii', name: 'MessageController', version: '0.2.14.18') { changing = true }
-    compile(group: 'iii', name: 'Utils', version: '1.2.0') { changing = true }
-    compile(group: 'KubAnomaly', name: 'DAVIDCommonLibrary', version: '0.1.9.20')
-
+    //compile(group: 'iii', name: 'MessageController', version: '0.2.14.18') { changing = true }
+    //compile(group: 'iii', name: 'Utils', version: '1.2.0') { changing = true }
+    //compile(group: 'KubAnomaly', name: 'DAVIDCommonLibrary', version: '0.1.9.20')
+    compile files('./resource/DAVIDCommonLibrary-0.1.9.20.jar')
+    compile files('./resource/MessageController-0.2.14.8.jar')
+    compile files('./resource/Utils-1.2.0.jar')
     // https://mvnrepository.com/artifact/com.nhaarman/mockito-kotlin
     testCompile group: 'com.nhaarman', name: 'mockito-kotlin', version: '1.6.0'
     compile group: 'org.mockito', name: 'mockito-core', version: '2.8.47'

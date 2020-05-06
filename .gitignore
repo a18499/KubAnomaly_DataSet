@@ -1,2 +1,4 @@
 venv/
 .idea/
+KubAnomalyAgent/.gradle/
+KubAnomalyAgent/build/
