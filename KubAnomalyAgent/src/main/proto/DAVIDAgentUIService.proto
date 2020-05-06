@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+option java_multiple_files = true;
+option java_package = "interfaces";
+option java_outer_classname = "DAVIDAgentUIServiceProtos";
+
+
+service UIControlService{
+    rpc start(google.protobuf.Empty) returns (BooleanStrut){}
+    rpc stop(google.protobuf.Empty) returns (BooleanStrut){}
+    rpc getStatus(google.protobuf.Empty) returns (BooleanStrut){}
+    rpc setHostIP(StringStruct)returns (StringStruct){}
+}
+
+
+message BooleanStrut{
+    bool Scucces = 1;
+}
+
+message StringStruct{
+    string result =1;
+}

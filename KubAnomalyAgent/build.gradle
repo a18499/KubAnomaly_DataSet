@@ -1,0 +1,150 @@
+buildscript {
+    ext.kotlin_version = '1.3.0'
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.6'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id 'maven-publish'
+    id "com.jfrog.artifactory"
+    id "com.google.protobuf" version "0.8.6"
+    id 'java'
+}
+
+group 'KubAnomaly'
+version '0.0.1'
+def grpcVersion = '1.7.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'http://140.92.13.145:8081/artifactory/libs-release'
+        credentials {
+            username = "admin"
+            password = "lablab"
+        }
+    }
+
+}
+
+protobuf {
+    protoc {
+        //path = 'protoc/bin/protoc'
+        //or
+        artifact = "com.google.protobuf:protoc:3.6.0"
+    }
+    plugins {
+        grpc {
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+            // delete java
+            // python {}
+        }
+    }
+    generateProtoTasks.generatedFilesBaseDir = "${projectDir}/src/main/generated"
+    //generatedFilesBaseDir = "$projectDir/src/proto"
+}
+
+
+sourceSets {
+    main {
+        println "In sourceSets"
+        java {
+            srcDir 'src/main/kotlin'
+            srcDir 'src/main/generated/main/java'
+            srcDir 'src/main/generated/main/grpc'
+        }
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'iii.org.david.core.DAVIDAgentMainKt',
+        )
+    }
+}
+task fatJar(type: Jar) {
+    manifest.from jar.manifest
+    baseName = "DAVIDAgent"
+    from {
+        configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    with jar
+    doLast {
+        copy {
+            from 'Config/'
+            into 'build/mydockerfile/Config/'
+            from 'build/libs/ContainerMonitor-'+project.version+'.jar'
+            into 'build/mydockerfile/'
+
+        }
+    }
+}
+
+
+dependencies {
+
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0'
+    //G-RPC  library
+    compile "com.google.api.grpc:proto-google-common-protos:0.1.9"
+    compile group: 'io.grpc', name: 'grpc-stub', version: "${grpcVersion}"
+    compile group: 'io.grpc', name: 'grpc-protobuf', version: "${grpcVersion}"
+    compile group: 'io.grpc', name: 'grpc-netty', version: "${grpcVersion}"
+    compile group: 'io.grpc', name: 'grpc-core', version: "${grpcVersion}"
+    compile group: 'io.grpc', name: 'grpc-all', version: "${grpcVersion}"
+    testCompile "io.grpc:grpc-testing:${grpcVersion}"
+
+    //Jackson
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.6'
+
+    compile 'com.beust:klaxon:3.0.1'
+
+    //Log4J
+    compile 'org.apache.logging.log4j:log4j-core:2.8'
+    compile 'org.apache.logging.log4j:log4j-api:2.8'
+
+    //Own Repo
+    //compile(group: 'KubAnomaly', name: 'DAVIDCommonLibrary', version: '0.1.9.19')
+    compile(group: 'iii', name: 'MessageController', version: '0.2.14.18') { changing = true }
+    compile(group: 'iii', name: 'Utils', version: '1.2.0') { changing = true }
+    compile(group: 'KubAnomaly', name: 'DAVIDCommonLibrary', version: '0.1.9.20')
+
+    // https://mvnrepository.com/artifact/com.nhaarman/mockito-kotlin
+    testCompile group: 'com.nhaarman', name: 'mockito-kotlin', version: '1.6.0'
+    compile group: 'org.mockito', name: 'mockito-core', version: '2.8.47'
+
+   // https://mvnrepository.com/artifact/com.typesafe/config
+    compile group: 'com.typesafe', name: 'config', version: '1.3.1'
+
+    // https://mvnrepository.com/artifact/com.zaxxer/nuprocess
+    compile group: 'com.zaxxer', name: 'nuprocess', version: '1.2.3'
+
+    // https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-reflect
+    compile group: 'org.jetbrains.kotlin', name: 'kotlin-reflect', version: '1.3.0'
+
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
