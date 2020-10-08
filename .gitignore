@@ -2,3 +2,6 @@ venv/
 .idea/
 KubAnomalyAgent/.gradle/
 KubAnomalyAgent/build/
+KubAnomalyAgent/gradle/
+KubAnomalyAgent/gradlew
+KubAnomalyAgent/gradlew.bat
